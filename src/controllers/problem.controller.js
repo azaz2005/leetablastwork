@@ -1,4 +1,9 @@
-import db from "../libs/db.js"
+import { db } from "../libs/db.js";
+import {
+  getJudge0LanguageId,
+  submitBatch,
+  pollBatchResults,
+} from "../libs/judge0.lib.js";
 
 export const createProblem = async (req, res) => {
   const {
@@ -45,10 +50,15 @@ export const createProblem = async (req, res) => {
         // console.log(
         //   `Testcase ${i + 1} and Language ${language} ----- result ${JSON.stringify(result.status.description)}`
         // );
-        if (result.status.id !== 3) {
-          return res.status(400).json({
-            error: `Testcase ${i + 1} failed for language ${language}`,
-          });
+       if (result.status.id !== 3) {
+  console.log("Judge0 Result:");
+  console.log(JSON.stringify(result, null, 2));
+
+  return res.status(400).json({
+    error: `Testcase ${i + 1} failed for language ${language}`,
+    result
+  });
+
         }
       }
     }
@@ -76,7 +86,7 @@ export const createProblem = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      error: "Error While Creating Problem",
+      error: error.message,
     });
   }
 };
